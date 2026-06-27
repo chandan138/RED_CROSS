@@ -29,7 +29,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <>
-      <nav className="sticky top-0 z-40 w-full bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80 px-6 py-4 flex items-center justify-between">
+      <nav className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-250 px-6 py-4 flex items-center justify-between shadow-sm">
         {/* Left side: Logo + Search Bar */}
         <div className="flex items-center space-x-6 flex-1 max-w-xl mr-4">
           {/* Logo */}
@@ -38,29 +38,29 @@ export const Navbar: React.FC = () => {
               <Heart className="w-5 h-5 fill-white" />
             </div>
             <div>
-              <span className="font-extrabold text-lg text-white tracking-wider flex items-center gap-1">
+              <span className="font-extrabold text-lg text-slate-800 tracking-wider flex items-center gap-1">
                 RED<span className="text-red-500 font-black">CROSS</span>
               </span>
-              <span className="block text-[9px] text-slate-400 -mt-1 font-semibold uppercase tracking-widest">Medical Portal</span>
+              <span className="block text-[11px] text-slate-500 -mt-1 font-semibold uppercase tracking-widest">Medical Portal</span>
             </div>
           </Link>
 
           {/* Search bar next to logo */}
-          <div className="flex items-center flex-1 bg-slate-900/60 border border-slate-800 rounded-xl px-3 py-1.5 space-x-2 max-w-xs sm:max-w-sm">
+          <div className="flex items-center flex-1 bg-slate-100 border border-slate-200 rounded-xl px-3 py-1.5 space-x-2 max-w-xs sm:max-w-sm">
             <Search className="w-3.5 h-3.5 text-slate-500 shrink-0" />
             <input
               type="text"
               placeholder="Search doctor or specialty..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent text-xs text-slate-200 placeholder-slate-500 focus:outline-none w-full"
+              className="bg-transparent text-sm text-slate-800 placeholder-slate-400 focus:outline-none w-full"
             />
           </div>
         </div>
 
         {/* Navigation / User Controls at Right Top */}
         <div className="flex items-center space-x-4">
-          <Link to="/" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">
+          <Link to="/" className="text-base font-medium text-slate-650 hover:text-slate-900 transition-colors">
             Find Doctor
           </Link>
           
@@ -68,17 +68,17 @@ export const Navbar: React.FC = () => {
             <div className="flex items-center space-x-3">
               <Link
                 to="/dashboard"
-                className="flex items-center space-x-1.5 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-200 text-xs font-semibold px-3.5 py-2 rounded-xl transition-all"
+                className="flex items-center space-x-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-semibold px-3.5 py-2 rounded-xl transition-all shadow-sm"
               >
                 <LayoutDashboard className="w-4 h-4" />
                 <span>Dashboard</span>
               </Link>
-              <div className="h-4 w-[1px] bg-slate-800" />
-              <div className="flex items-center space-x-2 bg-slate-900/40 px-3 py-1.5 rounded-xl border border-slate-800/40">
-                <div className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold uppercase">
+              <div className="h-4 w-[1px] bg-slate-200" />
+              <div className="flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
+                <div className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-550 flex items-center justify-center text-xs font-bold uppercase">
                   {user.name[0]}
                 </div>
-                <span className="text-xs font-medium text-slate-200 hidden sm:inline">{user.name}</span>
+                <span className="text-sm font-medium text-slate-700 hidden sm:inline">{user.name}</span>
               </div>
               <button
                 onClick={() => {
@@ -97,7 +97,7 @@ export const Navbar: React.FC = () => {
                 setIsSignUp(false);
                 setShowAuthModal(true);
               }}
-              className="flex items-center space-x-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-md hover:shadow-blue-500/10"
+              className="flex items-center space-x-1.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-all shadow-md hover:shadow-blue-500/10"
             >
               <LogIn className="w-4 h-4" />
               <span>Login / Sign Up</span>
