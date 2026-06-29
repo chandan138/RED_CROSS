@@ -117,8 +117,7 @@ export const Home: React.FC = () => {
                   <div className="border-t border-slate-100 pt-3 mt-4 flex justify-between items-center text-sm">
                     <span className="text-slate-500">Exp: {doc.experience}</span>
                     <span className="text-blue-500 font-bold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                      Book <ArrowRight className="w-3.5 h-3.5" />
-                    </span>
+                      Book <ArrowRight className="w-3.5 h-3.5" />                    </span>
                   </div>
                 </div>
               </div>

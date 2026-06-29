@@ -5,12 +5,13 @@ import { useAuth } from '../context/AuthContext';
 import { DOCTORS } from '../data/doctors';
 
 export const Dashboard: React.FC = () => {
-  const { user, bookings, reports, uploadReport } = useAuth();
+  const { user, bookings, reports, uploadReport, cancelBooking } = useAuth();
   const navigate = useNavigate();
 
   // Report Upload Form State
   const [selectedDocId, setSelectedDocId] = useState('');
   const [fileName, setFileName] = useState('');
+  const [fileObj, setFileObj] = useState<File | null>(null);
   const [reportNotes, setReportNotes] = useState('');
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
@@ -33,24 +34,49 @@ export const Dashboard: React.FC = () => {
 
   const handleReportUploadSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedDocId || !fileName) return;
+    if (!selectedDocId || !fileName || !fileObj) return;
 
     const matchedDoc = DOCTORS.find(d => d.id === selectedDocId);
     const doctorName = matchedDoc ? matchedDoc.name : 'Unknown Doctor';
 
-    uploadReport({
-      doctorId: selectedDocId,
-      doctorName,
-      fileName,
-      fileSize: '1.2 MB', // Mock file size
-      notes: reportNotes
-    });
+    const sizeInMB = (fileObj.size / (1024 * 1024)).toFixed(2) + ' MB';
 
-    setUploadSuccess(true);
-    setFileName('');
-    setReportNotes('');
-    setSelectedDocId('');
-    setTimeout(() => setUploadSuccess(false), 2500);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const fileData = reader.result as string;
+
+      uploadReport({
+        doctorId: selectedDocId,
+        doctorName,
+        fileName,
+        fileSize: sizeInMB,
+        notes: reportNotes,
+        fileData
+      });
+
+      setUploadSuccess(true);
+      setFileName('');
+      setFileObj(null);
+      setReportNotes('');
+      setSelectedDocId('');
+      setTimeout(() => setUploadSuccess(false), 2500);
+    };
+    reader.readAsDataURL(fileObj);
+  };
+
+  const handleViewReport = (fileData: string, fileName: string) => {
+    fetch(fileData)
+      .then(res => res.blob())
+      .then(blob => {
+        const url = URL.createObjectURL(blob);
+        const newWindow = window.open(url, '_blank');
+        if (!newWindow) {
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          a.click();
+        }
+      });
   };
 
   return (
@@ -126,7 +152,15 @@ export const Dashboard: React.FC = () => {
                           <Clock className="w-3.5 h-3.5" />
                           <span>{book.date} at {book.time}</span>
                         </div>
-                        <span className="text-xs text-slate-500 uppercase tracking-widest font-bold mt-1">Confirmed</span>
+                        <div className="flex flex-col items-end">
+                          <span className="text-xs text-slate-500 uppercase tracking-widest font-bold mt-1">Confirmed</span>
+                          <button
+                            onClick={() => cancelBooking(book.id)}
+                            className="mt-2 text-xs font-bold text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1 rounded transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -197,7 +231,17 @@ export const Dashboard: React.FC = () => {
                         <h4 className="font-bold text-sm text-slate-855 truncate" title={rep.fileName}>{rep.fileName}</h4>
                         <p className="text-xs text-slate-500">Doctor: <span className="text-slate-700 font-medium">{rep.doctorName}</span></p>
                         {rep.notes && <p className="text-xs text-slate-500 mt-1.5 italic">Notes: "{rep.notes}"</p>}
-                        <span className="inline-block text-[11px] text-slate-400 font-bold mt-2 uppercase tracking-wide">Uploaded: {rep.uploadedAt}</span>
+                        <div className="flex justify-between items-center mt-2">
+                          <span className="inline-block text-[11px] text-slate-400 font-bold uppercase tracking-wide">Uploaded: {rep.uploadedAt}</span>
+                          {rep.fileData && (
+                            <button
+                              onClick={() => handleViewReport(rep.fileData!, rep.fileName)}
+                              className="text-[11px] font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded transition-colors"
+                            >
+                              View
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -248,7 +292,26 @@ export const Dashboard: React.FC = () => {
                       </select>
                     </div>
 
-                    {/* File Upload Simulation */}
+                    {/* File Upload Real Input */}
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                        Upload File (PDF/PNG)
+                      </label>
+                      <input
+                        type="file"
+                        accept=".pdf, .png"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setFileObj(file);
+                            if (!fileName) setFileName(file.name);
+                          }
+                        }}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-1.5 text-sm text-slate-800 focus:outline-none focus:border-blue-500 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer"
+                      />
+                    </div>
+
+                    {/* File Name Title */}
                     <div>
                       <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
                         Report Name / File Title
@@ -279,8 +342,8 @@ export const Dashboard: React.FC = () => {
 
                     <button
                       type="submit"
-                      disabled={!selectedDocId || !fileName}
-                      className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-bold text-sm py-3 rounded-xl transition-all shadow-lg hover:shadow-blue-500/10 flex items-center justify-center gap-1.5 mt-2"
+                      disabled={!selectedDocId || !fileName || !fileObj}
+                      className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-300 disabled:text-slate-500 text-white font-bold text-sm py-3 rounded-xl transition-all shadow-lg hover:shadow-blue-500/10 flex items-center justify-center gap-1.5 mt-2"
                     >
                       <Upload className="w-4 h-4" />
                       <span>Save Record</span>

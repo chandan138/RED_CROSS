@@ -402,7 +402,7 @@ export const Chatbot: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-lg flex items-center gap-1">
-                  Teddy Bot <Sparkles className="w-4 h-4 text-amber-300" />
+                  Medi <Sparkles className="w-4 h-4 text-amber-300" />
                 </h3>
                 <p className="text-sm text-blue-100">Medical RAG Advisor</p>
               </div>
@@ -469,11 +469,7 @@ export const Chatbot: React.FC = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Warnings / Disclaimers */}
-          <div className="px-4 py-2.5 bg-slate-900 border-t border-slate-800 text-sm text-amber-500/80 flex items-center space-x-2 shrink-0">
-            <ShieldAlert className="w-4 h-4 shrink-0" />
-            <span>Medibot AI suggestions do not replace clinical advice.</span>
-          </div>
+
 
           {/* Form */}
           <div className="p-4 bg-slate-900 border-t border-slate-800 flex items-center space-x-2 shrink-0">

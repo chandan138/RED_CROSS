@@ -23,6 +23,7 @@ export interface DoctorReport {
   fileSize: string;
   notes: string;
   uploadedAt: string;
+  fileData?: string;
 }
 
 interface User {
@@ -40,6 +41,7 @@ interface AuthContextType {
   signup: (name: string, email: string) => boolean;
   logout: () => void;
   createBooking: (booking: Omit<Booking, 'id' | 'userEmail' | 'status'>) => void;
+  cancelBooking: (id: string) => void;
   uploadReport: (report: Omit<DoctorReport, 'id' | 'userEmail' | 'uploadedAt'>) => void;
 }
 
@@ -109,6 +111,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     saveBookings([newBooking, ...bookings]);
   };
 
+  const cancelBooking = (id: string) => {
+    const updatedBookings = bookings.map(b => 
+      b.id === id ? { ...b, status: 'Cancelled' as const } : b
+    );
+    saveBookings(updatedBookings);
+  };
+
   const uploadReport = (reportData: Omit<DoctorReport, 'id' | 'userEmail' | 'uploadedAt'>) => {
     if (!user) return;
     const newReport: DoctorReport = {
@@ -135,6 +144,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         signup,
         logout,
         createBooking,
+        cancelBooking,
         uploadReport,
       }}
     >
